@@ -17,13 +17,13 @@ Antes de comenzar, asegúrate de tener instalados los siguientes requisitos:
 2. Ejecuta el siguiente comando para clonar el repositorio:
 
    ```bash
-   git clone https://github.com/tu-usuario/tu-repo.git
+   git clone https://github.com/talentotechoriente24/flask-first-project.git
    ```
 
 3. Navega a la carpeta del proyecto:
 
    ```bash
-   cd tu-repo
+   cd flask-first-project
    ```
 
 ### Crear y Activar el Entorno Virtual
