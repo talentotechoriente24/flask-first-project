@@ -16,6 +16,11 @@ role_response_model = role_ns.model('RoleResponse', {
     'name': fields.String(description='Nombre del rol')
 })
 
+# Definir el modelo de salida para usuarios
+user_response_model = role_ns.model('UserResponse', {
+    'username': fields.String(description='Nombre de usuario')
+})
+
 # Controlador para manejar las operaciones CRUD de roles
 @role_ns.route('/')
 class RoleListResource(Resource):
@@ -38,7 +43,6 @@ class RoleListResource(Resource):
         except ValueError as e:
             return {'message': str(e)}, 400
 
-
 @role_ns.route('/<int:role_id>')
 @role_ns.param('role_id', 'El ID del rol')
 class RoleResource(Resource):
@@ -50,3 +54,37 @@ class RoleResource(Resource):
         if not role:
             return {'message': 'Role not found'}, 404
         return role, 200
+
+    @role_ns.doc('update_role')
+    @role_ns.expect(role_model, validate=True)  # Esperar los nuevos datos del rol
+    @role_ns.marshal_with(role_response_model)
+    def put(self, role_id):
+        """Actualizar un rol por su ID"""
+        data = request.get_json()
+        try:
+            role = RoleService.update_role(role_id, data['name'])
+            return role, 200
+        except ValueError as e:
+            return {'message': str(e)}, 404
+
+    @role_ns.doc('delete_role')
+    def delete(self, role_id):
+        """Eliminar un rol por su ID"""
+        try:
+            RoleService.delete_role(role_id)
+            return {'message': 'Role deleted successfully'}, 200
+        except ValueError as e:
+            return {'message': str(e)}, 404
+
+@role_ns.route('/<int:role_id>/users')
+@role_ns.param('role_id', 'El ID del rol')
+class RoleUsersResource(Resource):
+    @role_ns.doc('get_users_by_role')
+    @role_ns.marshal_list_with(user_response_model)
+    def get(self, role_id):
+        """Obtener todos los usuarios que tienen asignado un rol específico"""
+        try:
+            users = RoleService.get_users_by_role(role_id)
+            return users, 200
+        except ValueError as e:
+            return {'message': str(e)}, 404
